@@ -1,16 +1,23 @@
 package Projet1.KFC.model;
 
-import lombok.AllArgsConstructor;
-
-import lombok.NoArgsConstructor;
 
 
-import java.sql.Timestamp;
+
+
 import java.time.LocalDateTime;
 
-@NoArgsConstructor
-@AllArgsConstructor
+
 public class IngredientMenu {
+    public IngredientMenu(int ingredientMenuId, int menuId, int unitId, int ingredientId, double quantityRequired, String type, LocalDateTime dateMovement) {
+        this.ingredientMenuId = ingredientMenuId;
+        this.menuId = menuId;
+        this.unitId = unitId;
+        IngredientId = ingredientId;
+        this.quantityRequired = quantityRequired;
+        this.type = type;
+        this.dateMovement = dateMovement;
+    }
+
     private int ingredientMenuId;
     private int menuId;
     private int unitId;

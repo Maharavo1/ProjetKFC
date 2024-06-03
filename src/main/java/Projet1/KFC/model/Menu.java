@@ -1,17 +1,19 @@
 package Projet1.KFC.model;
 
-import lombok.AllArgsConstructor;
 
-import lombok.NoArgsConstructor;
-
-
-
-@AllArgsConstructor
-@NoArgsConstructor
 public class Menu {
     private int menuId;
+
+
+
     private String menuName;
     private double priceSales; //prix de vente
+
+    public Menu(int menuId, String menuName , double priceSales) {
+        this.menuId = menuId;
+        this.menuName = menuName;
+        this.priceSales = priceSales;
+    }
 
     public int getMenuId() {
         return menuId;

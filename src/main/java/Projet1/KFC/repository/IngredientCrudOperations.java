@@ -11,49 +11,29 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-public class IngredientCrudOperations implements CrudOperations<Ingredient>{
+public class IngredientCrudOperations implements CrudOperations<Ingredient> {
     @Override
     public Ingredient findById(int id) {
         Connection connection = null;
-        PreparedStatement preparedStatement = null;
+        PreparedStatement statement = null;
         ResultSet resultSet = null;
         Ingredient ingredient = null;
-
         try {
             String sql = "SELECT * FROM ingredient WHERE ingredient_id = ?";
             connection = DBConnection.getConnection();
-            preparedStatement = connection.prepareStatement(sql);
-            preparedStatement.setInt(1, id);
-
-            resultSet = preparedStatement.executeQuery();
-
-            if (resultSet.next()) {
-              ingredient = new Ingredient(
-                      resultSet.getInt("ingredient_id"),
-                      resultSet.getInt("unit_id"),
-                      resultSet.getString("name"),
-                      resultSet.getDouble("ingredient_price"),
-                      resultSet.getDouble("price")
-              );
+            statement = connection.prepareStatement(sql);
+            statement.setInt(1, id);
+            resultSet = statement.executeQuery();
+            while (resultSet.next()) {
+                int ingredientId = resultSet.getInt("ingredient_id");
+                int unitId = resultSet.getInt("unit_id");
+                String name = resultSet.getString("name");
+                double ingredientPrice = resultSet.getDouble("ingredient_price");
+                double stock = resultSet.getDouble("stock");
+                ingredient = new Ingredient(ingredientId, unitId, name, ingredientPrice, stock);
             }
         } catch (SQLException e) {
             throw new RuntimeException(e);
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        } finally {
-            try {
-                if (resultSet != null) {
-                    resultSet.close();
-                }
-                if (preparedStatement != null) {
-                    preparedStatement.close();
-                }
-                if (connection != null) {
-                    connection.close();
-                }
-            } catch (SQLException e) {
-                throw new RuntimeException(e);
-            }
         }
 
         return ingredient;
@@ -62,15 +42,15 @@ public class IngredientCrudOperations implements CrudOperations<Ingredient>{
     @Override
     public List<Ingredient> findAll() {
         Connection connection = null;
-        PreparedStatement preparedStatement = null;
+        PreparedStatement preparedstatement = null;
         ResultSet resultSet = null;
         List<Ingredient> ingredients = new ArrayList<>();
 
         try {
             String sql = "SELECT * FROM ingredient";
             connection = DBConnection.getConnection();
-            preparedStatement = connection.prepareStatement(sql);
-            resultSet = preparedStatement.executeQuery(sql);
+           preparedstatement = connection.prepareStatement(sql);
+            resultSet = preparedstatement.executeQuery(sql);
 
             while (resultSet.next()) {
                 Ingredient ingredient = new Ingredient(
@@ -89,8 +69,8 @@ public class IngredientCrudOperations implements CrudOperations<Ingredient>{
                 if (resultSet != null) {
                     resultSet.close();
                 }
-                if (preparedStatement != null) {
-                    preparedStatement.close();
+                if (preparedstatement != null) {
+                    preparedstatement.close();
                 }
                 if (connection != null) {
                     connection.close();
@@ -172,4 +152,8 @@ public class IngredientCrudOperations implements CrudOperations<Ingredient>{
 
         return toUpdate;
     }
+
 }
+
+
+

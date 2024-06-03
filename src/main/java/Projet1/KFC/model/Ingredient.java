@@ -1,16 +1,21 @@
 package Projet1.KFC.model;
 
 import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
 
-@AllArgsConstructor
-@NoArgsConstructor
 public class Ingredient {
     private int ingredientId;
     private int unitId;
     private String name;
     private double ingredientPrice;
     private double stock;
+
+    public Ingredient(int ingredientId, int unitId, String name , double ingredientPrice , double stock) {
+        this.ingredientId = ingredientId;
+        this.unitId = unitId;
+        this.name = name;
+        this.ingredientPrice = ingredientPrice;
+        this.stock = stock;
+    }
 
     // Getters and Setters
     public int getIngredientId() {
