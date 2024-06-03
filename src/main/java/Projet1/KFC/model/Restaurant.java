@@ -11,5 +11,21 @@ import lombok.Setter;
 @AllArgsConstructor
 public class Restaurant {
     private int restaurantId;
-    private String restaurantLieu;
+    private String restaurantLocation;
+
+    public int getRestaurantId() {
+        return restaurantId;
+    }
+
+    public void setRestaurantId(int restaurantId) {
+        this.restaurantId = restaurantId;
+    }
+
+    public String getRestaurantLocation() {
+        return restaurantLocation;
+    }
+
+    public void setRestaurantLocation(String restaurantLocation) {
+        this.restaurantLocation = restaurantLocation;
+    }
 }
