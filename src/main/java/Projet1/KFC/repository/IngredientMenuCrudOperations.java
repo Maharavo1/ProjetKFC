@@ -1,7 +1,9 @@
 package Projet1.KFC.repository;
 
 import Projet1.KFC.db.DBConnection;
+import Projet1.KFC.model.Ingredient;
 import Projet1.KFC.model.IngredientMenu;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -11,6 +13,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class IngredientMenuCrudOperations implements CrudOperations<IngredientMenu>{
+    private  IngredientCrudOperations ingredientCrudOperations;
+
+    @Autowired
+    public IngredientMenuCrudOperations(IngredientCrudOperations ingredientCrudOperations){
+        this.ingredientCrudOperations = ingredientCrudOperations;
+    }
 
 
     @Override
@@ -203,6 +211,26 @@ public class IngredientMenuCrudOperations implements CrudOperations<IngredientMe
                 throw new RuntimeException(e);
             }
         }
+    }
+
+
+    public static double stockIngredients(IngredientMenu ingredientMenu){
+        double stock = 0.0;
+        if(ingredientMenu.getType().equals("entrer")){
+            stock += ingredientMenu.getQuantityRequired();
+        }
+        if (ingredientMenu.getType().equals("sortie")){
+            stock -= ingredientMenu.getQuantityRequired();
+        }
+        return stock;
+    }
+
+    public Ingredient updateStock(IngredientMenu ingredientMenu){
+        double stock = stockIngredients(ingredientMenu);
+        Ingredient ingredient = ingredientCrudOperations.findById(ingredientMenu.getIngredientId());
+        Ingredient ingredientUpdateStock = new Ingredient(ingredient.getIngredientId() , ingredient.getUnitId() , ingredient.getName() , ingredient.getIngredientPrice() ,ingredient.getUnitId() , stock );
+        ingredientCrudOperations.Update(ingredientUpdateStock);
+        return ingredientUpdateStock;
     }
 
 }
