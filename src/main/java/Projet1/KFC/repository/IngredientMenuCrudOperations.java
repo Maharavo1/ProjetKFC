@@ -9,8 +9,10 @@ import java.sql.SQLException;
 import java.util.List;
 
 public class IngredientMenuCrudOperations implements CrudOperations<IngredientMenu>{
+
+
     @Override
-    public IngredientMenu findById() {
+    public IngredientMenu findById(int id) {
         return null;
     }
 
@@ -54,4 +56,9 @@ public class IngredientMenuCrudOperations implements CrudOperations<IngredientMe
         }
         return toSave;
         }
+
+    @Override
+    public IngredientMenu Update(IngredientMenu toUpdate) {
+        return null;
+    }
 }
