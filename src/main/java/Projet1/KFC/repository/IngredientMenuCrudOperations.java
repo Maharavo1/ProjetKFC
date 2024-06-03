@@ -5,7 +5,9 @@ import Projet1.KFC.model.IngredientMenu;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 
 public class IngredientMenuCrudOperations implements CrudOperations<IngredientMenu>{
@@ -13,12 +15,94 @@ public class IngredientMenuCrudOperations implements CrudOperations<IngredientMe
 
     @Override
     public IngredientMenu findById(int id) {
-        return null;
+        Connection connection = null;
+        PreparedStatement preparedStatement = null;
+        ResultSet resultSet = null;
+        IngredientMenu ingredientMenu = null;
+
+        try {
+            String sql = "SELECT * FROM ingredient_menu WHERE ingredient_menu_id = ?";
+            connection = DBConnection.getConnection();
+            preparedStatement = connection.prepareStatement(sql);
+            preparedStatement.setInt(1, id);
+            resultSet = preparedStatement.executeQuery();
+
+            if (resultSet.next()) {
+                ingredientMenu = new IngredientMenu(
+                        resultSet.getInt("ingredient_menu_id"),
+                        resultSet.getInt("menu_id"),
+                        resultSet.getInt("unit_id"),
+                        resultSet.getInt("ingredient_id"),
+                        resultSet.getDouble("quantity_required"),
+                        resultSet.getString("type"),
+                        resultSet.getTimestamp("date_movement").toLocalDateTime()
+                );
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        } finally {
+            try {
+                if (resultSet != null) {
+                    resultSet.close();
+                }
+                if (preparedStatement != null) {
+                    preparedStatement.close();
+                }
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
+            }
+        }
+
+        return ingredientMenu;
     }
 
     @Override
     public List<IngredientMenu> findAll() {
-        return null;
+        Connection connection = null;
+        PreparedStatement preparedStatement = null;
+        ResultSet resultSet = null;
+        List<IngredientMenu> ingredientMenus = new ArrayList<>();
+
+        try {
+            String sql = "SELECT * FROM ingredient_menu";
+            connection = DBConnection.getConnection();
+            preparedStatement = connection.prepareStatement(sql);
+            resultSet = preparedStatement.executeQuery();
+
+            while (resultSet.next()) {
+                IngredientMenu ingredientMenu = new IngredientMenu(
+                        resultSet.getInt("ingredient_menu_id"),
+                        resultSet.getInt("menu_id"),
+                        resultSet.getInt("unit_id"),
+                        resultSet.getInt("ingredient_id"),
+                        resultSet.getDouble("quantity_required"),
+                        resultSet.getString("type"),
+                        resultSet.getTimestamp("date_movement").toLocalDateTime()
+                );
+                ingredientMenus.add(ingredientMenu);
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        } finally {
+            try {
+                if (resultSet != null) {
+                    resultSet.close();
+                }
+                if (preparedStatement != null) {
+                    preparedStatement.close();
+                }
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
+            }
+        }
+
+        return ingredientMenus;
     }
 
     @Override
@@ -59,6 +143,66 @@ public class IngredientMenuCrudOperations implements CrudOperations<IngredientMe
 
     @Override
     public IngredientMenu Update(IngredientMenu toUpdate) {
-        return null;
+        Connection connection = null;
+        PreparedStatement preparedStatement = null;
+
+        try {
+            String sql = "UPDATE ingredient_menu SET menu_id = ?, unit_id = ?, ingredient_id = ?, quantity_required = ?, type = ?, date_movement = ? WHERE ingredient_menu_id = ?";
+            connection = DBConnection.getConnection();
+            preparedStatement = connection.prepareStatement(sql);
+
+            preparedStatement.setInt(1, toUpdate.getMenuId());
+            preparedStatement.setInt(2, toUpdate.getUnitId());
+            preparedStatement.setInt(3, toUpdate.getIngredientId());
+            preparedStatement.setDouble(4, toUpdate.getQuantityRequired());
+            preparedStatement.setString(5, toUpdate.getType());
+            preparedStatement.setTimestamp(6, java.sql.Timestamp.valueOf(toUpdate.getDateMovement()));
+            preparedStatement.setInt(7, toUpdate.getIngredientMenuId());
+
+            preparedStatement.executeUpdate();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        } finally {
+            try {
+                if (preparedStatement != null) {
+                    preparedStatement.close();
+                }
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        }
+        return toUpdate;
     }
+
+    @Override
+    public void delete(int id) {
+        Connection connection = null;
+        PreparedStatement preparedStatement = null;
+
+        try {
+            String sql = "DELETE FROM ingredient_menu WHERE ingredient_menu_id = ?";
+            connection = DBConnection.getConnection();
+            preparedStatement = connection.prepareStatement(sql);
+            preparedStatement.setInt(1, id);
+
+            preparedStatement.executeUpdate();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        } finally {
+            try {
+                if (preparedStatement != null) {
+                    preparedStatement.close();
+                }
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        }
+    }
+
 }

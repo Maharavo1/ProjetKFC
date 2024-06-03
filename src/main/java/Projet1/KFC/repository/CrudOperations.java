@@ -8,4 +8,5 @@ public interface CrudOperations <T>{
     List<T> findAll();
     T save(T toSave);
     T Update(T toUpdate);
+    void delete(int id);
 }
