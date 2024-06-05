@@ -4,6 +4,7 @@ import Projet1.KFC.db.DBConnection;
 import Projet1.KFC.model.Ingredient;
 import Projet1.KFC.model.IngredientMenu;
 import Projet1.KFC.model.IngredientUseMore;
+import Projet1.KFC.model.StockMovement;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.sql.*;
@@ -238,11 +239,11 @@ public class IngredientMenuCrudOperations implements CrudOperations<IngredientMe
         return ingredientUpdateStock;
     }
 
-    public void movementStock(LocalDateTime startDate, LocalDateTime endDate) {
+    public List<StockMovement> getmovementStock(LocalDateTime startDate, LocalDateTime endDate) {
         Connection connection = null;
         PreparedStatement preparedStatement = null;
         ResultSet resultSet = null;
-
+        List<StockMovement> movements = new ArrayList<>();
         try {
             String sql = "SELECT im.date_movement, i.name, i.type, im.quantity_required " +
                     "FROM ingredient_menu im " +
@@ -257,13 +258,11 @@ public class IngredientMenuCrudOperations implements CrudOperations<IngredientMe
             resultSet = preparedStatement.executeQuery();
 
             while (resultSet.next()) {
-                resultSet.getInt("ingredient_menu_id"),
-                        resultSet.getInt("menu_id"),
-                        resultSet.getInt("unit_id"),
-                        resultSet.getInt("ingredient_id"),
-                        resultSet.getDouble("quantity_required"),
-                        resultSet.getString("type"),
-                        resultSet.getTimestamp("date_movement").toLocalDateTime()
+                LocalDateTime dateMovement = resultSet.getTimestamp("date_of_movement").toLocalDateTime();
+                String ingredientName = resultSet.getString("ingredient_name");
+                String type = resultSet.getString("type");
+                double quantity = resultSet.getDouble("quantity");
+                int unitId = resultSet.getInt("unit_id");
             }
         } catch (SQLException e) {
             throw new RuntimeException(e);
