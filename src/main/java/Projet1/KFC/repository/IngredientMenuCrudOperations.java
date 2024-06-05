@@ -5,10 +5,8 @@ import Projet1.KFC.model.Ingredient;
 import Projet1.KFC.model.IngredientMenu;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -228,9 +226,62 @@ public class IngredientMenuCrudOperations implements CrudOperations<IngredientMe
     public Ingredient updateStock(IngredientMenu ingredientMenu){
         double stock = stockIngredients(ingredientMenu);
         Ingredient ingredient = ingredientCrudOperations.findById(ingredientMenu.getIngredientId());
-        Ingredient ingredientUpdateStock = new Ingredient(ingredient.getIngredientId() , ingredient.getUnitId() , ingredient.getName() , ingredient.getIngredientPrice() ,ingredient.getUnitId() , stock );
+        Ingredient ingredientUpdateStock = new Ingredient(
+                ingredient.getIngredientId() ,
+                ingredient.getUnitId() ,
+                ingredient.getName() ,
+                ingredient.getIngredientPrice() ,
+                ingredient.getUnitId() ,
+                stock );
         ingredientCrudOperations.Update(ingredientUpdateStock);
         return ingredientUpdateStock;
     }
+
+    public void movementStock(LocalDateTime startDate, LocalDateTime endDate) {
+        Connection connection = null;
+        PreparedStatement preparedStatement = null;
+        ResultSet resultSet = null;
+
+        try {
+            String sql = "SELECT im.date_movement, i.name, i.type, im.quantity_required " +
+                    "FROM ingredient_menu im " +
+                    "INNER JOIN ingredient i ON i.ingredient_id = im.ingredient_id " +
+                    "INNER JOIN unit u ON u.unit_id = im.unit_id " +
+                    "WHERE im.date_movement BETWEEN ? AND ?";
+
+            connection = DBConnection.getConnection();
+            preparedStatement = connection.prepareStatement(sql);
+            preparedStatement.setTimestamp(1, Timestamp.valueOf(startDate));
+            preparedStatement.setTimestamp(2, Timestamp.valueOf(endDate));
+            resultSet = preparedStatement.executeQuery();
+
+            while (resultSet.next()) {
+                resultSet.getInt("ingredient_menu_id"),
+                        resultSet.getInt("menu_id"),
+                        resultSet.getInt("unit_id"),
+                        resultSet.getInt("ingredient_id"),
+                        resultSet.getDouble("quantity_required"),
+                        resultSet.getString("type"),
+                        resultSet.getTimestamp("date_movement").toLocalDateTime()
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        } finally {
+            try {
+                if (resultSet != null) {
+                    resultSet.close();
+                }
+                if (preparedStatement != null) {
+                    preparedStatement.close();
+                }
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
+            }
+        }
+    }
+
 
 }
