@@ -3,6 +3,7 @@ package Projet1.KFC.repository;
 import Projet1.KFC.db.DBConnection;
 import Projet1.KFC.model.Ingredient;
 import Projet1.KFC.model.IngredientMenu;
+import Projet1.KFC.model.IngredientUseMore;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.sql.*;
@@ -282,6 +283,40 @@ public class IngredientMenuCrudOperations implements CrudOperations<IngredientMe
             }
         }
     }
+
+
+    public List<IngredientUseMore> getIngredientUseMore(LocalDateTime startDate, LocalDateTime endDate) {
+        List<IngredientUseMore> usageList = new ArrayList<>();
+        String sql = "SELECT i.ingredient_id AS ingredient_id, i.name AS ingredient_name, m.name AS menu_use_more, im.quantity_required AS quantity_spent, u.name AS unit " +
+                "FROM ingredient_menu im " +
+                "INNER JOIN ingredient i ON i.ingredient_id = im.ingredient_id " +
+                "INNER JOIN menu m ON m.menu_id = im.menu_id " +
+                "INNER JOIN unit u ON u.unit_id = im.unit_id " +
+                "WHERE im.date_movement BETWEEN ? AND ? " +
+                "GROUP BY i.ingredient_id, i.name, m.name, im.quantity_required, u.name " +
+                "ORDER BY im.quantity_required DESC " +
+                "LIMIT 3";
+        try (Connection connection = DBConnection.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+            preparedStatement.setTimestamp(1, Timestamp.valueOf(startDate));
+            preparedStatement.setTimestamp(2, Timestamp.valueOf(endDate));
+            try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                while (resultSet.next()) {
+                    int ingredientId = resultSet.getInt("ingredient_id");
+                    String ingredientName = resultSet.getString("ingredient_name");
+                    String menuUseMore = resultSet.getString("menu_use_more");
+                    double quantitySpent = resultSet.getDouble("quantity_spent");
+                    String unit = resultSet.getString("unit");
+                    IngredientUseMore ingredientUseMore = new IngredientUseMore(ingredientId, ingredientName, menuUseMore, quantitySpent, unit);
+                    usageList.add(ingredientUseMore);
+                }
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return usageList;
+    }
+
 
 
 }
